@@ -34,8 +34,11 @@ const store = configureStore({
     // .concat(yourCustomMiddleware)
 });
 
-type RootStateType = typeof rootReducer
-export type AppStateType = ReturnType<RootStateType>
+type PropertiesTypes<T> = T extends {[key: string]: infer U } ? U : never;
+export type InferActionsTypes<T extends {[key: string]: (...args: any[]) => any}> = ReturnType<PropertiesTypes<T>>;
+
+type RootStateType = typeof rootReducer;
+export type AppStateType = ReturnType<RootStateType>;
 
 // @ts-ignore
 window.__store__ = store;
