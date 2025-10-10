@@ -1,11 +1,14 @@
-import React from "react";
-import {reduxForm} from "redux-form";
+import React, {FC} from "react";
+import {InjectedFormProps, reduxForm} from "redux-form";
 import {creatField, Textarea} from "../Common/FormsControl/FormsControl";
 import {required} from "../utils/validators/validators";
 
-const NewsForm = (props) => {
+type FormDataType = {
+    addNews: string
+}
+const NewsForm: FC<InjectedFormProps<FormDataType>> = ({handleSubmit}) => {
     return (
-        <form onSubmit={props.handleSubmit}>
+        <form onSubmit={handleSubmit}>
             <div>
                 {creatField('addNews', [required], 'Add News', Textarea)}
             </div>
@@ -16,6 +19,6 @@ const NewsForm = (props) => {
     )
 }
 
-const NewsFormRedux = reduxForm({form: 'news'})(NewsForm);
+const NewsFormRedux = reduxForm<FormDataType>({form: 'news'})(NewsForm);
 
 export default NewsFormRedux;

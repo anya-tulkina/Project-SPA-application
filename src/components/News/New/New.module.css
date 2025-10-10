@@ -1,14 +1,4 @@
-import React from "react";
-
-const New = (props) => {
-
-    return (
-        <div className={style.news}>
-            <img src='https://www.film.ru/sites/default/files/people/1457282-1157722.jpg'/>
-            { props.news }
-        </div>
-    )
-
+.news img {
+    width: 30px;
+    height: 30px;
 }
-
-export default New;

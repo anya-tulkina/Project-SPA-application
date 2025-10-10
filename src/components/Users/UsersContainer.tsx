@@ -10,16 +10,35 @@ import {
     getPageSize,
     getTotalUsersCount, getUsers
 } from '../../redux/users-selectors'
+import {UserType} from "../../types/types";
+import {compose} from "redux";
+import {AppStateType} from "../../redux/redux-store";
 
-class UsersAPIComponent extends React.Component {
+type StateType = {
+    users: Array<UserType>
+    currentPage: number
+    pageSize: number
+    isFetching: boolean
+    totalUsersCount: number
+    followingIsProgress: Array<number>
+}
+type DispatchType = {
+    requestUsers: (currentPage: number,pageSize: number) => void
+    unfollow: (userId: number) => void
+    follow: (userId: number) => void
+}
+
+type PropsType = StateType & DispatchType
+
+class UsersAPIComponent extends React.Component<PropsType> {
 
     componentDidMount() {
         let {currentPage, pageSize} = this.props
         this.props.requestUsers(currentPage,pageSize)
     }
 
-    onPageChanged = (numberPage) => {
-        let {pageSize, requestUsers} = this.props
+    onPageChanged = (numberPage: number) => {
+        let {pageSize} = this.props
         this.props.requestUsers(numberPage, pageSize)
     }
 
@@ -39,7 +58,7 @@ class UsersAPIComponent extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state: AppStateType): StateType => {
     return {
         users: getUsers(state),
         pageSize: getPageSize(state),
@@ -50,7 +69,9 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps, {follow, unfollow, requestUsers})(UsersAPIComponent);
+export default compose(
+    connect(mapStateToProps, {follow, unfollow, requestUsers})
+)(UsersAPIComponent) as React.ComponentType<PropsType>;
 
 
 

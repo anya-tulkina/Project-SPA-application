@@ -1,8 +1,17 @@
-import React, {useState} from "react";
+import React, {FC, useState} from 'react';
 import style from './Pagination.module.css'
 import cl from 'classnames'
 
-let Paginator = ({totalItemsCount, pageSize, currentPage, onPageChanged, portionSize = 10}) => {
+type PropsType = {
+    totalItemsCount: number
+    pageSize: number
+    currentPage: number
+    onPageChanged: (pageNumber: number) => void
+    portionSize?: number
+}
+
+let Paginator: FC<PropsType> = ({totalItemsCount, pageSize, currentPage, onPageChanged,
+                     portionSize = 10}) => {
 
     //Считаем сколько пользователей вкладок с юзерами на странице
     let pagesCount = Math.ceil(totalItemsCount / pageSize);
@@ -30,7 +39,7 @@ let Paginator = ({totalItemsCount, pageSize, currentPage, onPageChanged, portion
                 return <span
                     key={p.id}
                     className={cl({[style.selectedPage]: currentPage === p}, style.pageNumber)}/*присваеваем класс выбранной странице*/
-                    onClick={(e) => {
+                    onClick={() => {
                         onPageChanged(p)
                     }}>{p}</span>
             })}

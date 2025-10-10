@@ -1,7 +1,10 @@
-import React from "react";
+import React, {FC} from "react";
 import style from "./New.module.css";
 
-const New = ({news}) => {
+type PropsType = {
+    news: string
+}
+const New: FC<PropsType> = ({news}) => {
 
     return (
         <div className={style.news}>

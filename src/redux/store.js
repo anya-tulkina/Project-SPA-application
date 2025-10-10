@@ -9,9 +9,9 @@ let store = {
                 {id: 1, message: 'Hi', likesCount: 10},
                 {id: 2, message: 'Bye', likesCount: 5},
             ],
-            newPostText: " ",
+            newPostText: ' ',
         },
-        messagePage: {
+        dialogsPage: {
             dialogs: [
                 {id: 1, name: 'Dima'},
                 {id: 2, name: 'Valera'},
@@ -24,25 +24,25 @@ let store = {
             ],
             newMessageBody: ' ',
         },
-        sideBar: {
-            friends: [
-                {
-                    id: 1,
-                    name: 'Dima',
-                    img: 'https://trashbox.ru/ifiles/220798_004e6a_img_20140503_122504.jpg_min1/avatarki.-2.jpg'
-                },
-                {
-                    id: 2,
-                    name: 'Valera',
-                    img: 'https://trashbox.ru/ifiles/220798_004e6a_img_20140503_122504.jpg_min1/avatarki.-2.jpg'
-                },
-                {
-                    id: 3,
-                    name: 'Anna',
-                    img: 'https://trashbox.ru/ifiles/220798_004e6a_img_20140503_122504.jpg_min1/avatarki.-2.jpg'
-                },
-            ]
-        }
+        // sideBar: {
+        //     friends: [
+        //         {
+        //             id: 1,
+        //             name: 'Dima',
+        //             img: 'https://trashbox.ru/ifiles/220798_004e6a_img_20140503_122504.jpg_min1/avatarki.-2.jpg'
+        //         },
+        //         {
+        //             id: 2,
+        //             name: 'Valera',
+        //             img: 'https://trashbox.ru/ifiles/220798_004e6a_img_20140503_122504.jpg_min1/avatarki.-2.jpg'
+        //         },
+        //         {
+        //             id: 3,
+        //             name: 'Anna',
+        //             img: 'https://trashbox.ru/ifiles/220798_004e6a_img_20140503_122504.jpg_min1/avatarki.-2.jpg'
+        //         },
+        //     ]
+        // }
     },
     _callSubscriber() {
         console.log('hey')
@@ -57,11 +57,11 @@ let store = {
 
     dispatch (action) {// type: 'ADD-POST'
         this._state.profilePage = profileReducer(this._state.profilePage, action);
-        this._state.messagePage = dialogsReducer(this._state.messagePage, action);
+        this._state.dialogsPage = dialogsReducer(this._state.dialogsPage, action);
         this._state.sideBar = sidebarReducer(this._state.sideBar, action);
         this._callSubscriber(this._state);
     }
 };
-
+// window.store = store;
 export default store;
 

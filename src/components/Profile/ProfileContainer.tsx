@@ -2,7 +2,7 @@ import Profile from "./Profile";
 import React from "react";
 import {connect} from "react-redux";
 import {getUserProfile, getStatus, updateStatus, savePhoto, saveProfile} from "../../redux/profile-reducer";
-import {Navigate, useParams} from "react-router-dom";
+import {Params, useParams} from "react-router-dom";
 import {compose} from "redux";
 import {
     getAuth,
@@ -11,20 +11,36 @@ import {
     getProfilePageStatus
 } from "../../redux/profile-selectors";
 import {withAuthComponent} from "../hoc/withAuthNavigator";
+import {ProfileType} from "../../types/types";
+import {AppStateType} from "../../redux/redux-store";
 
-const withRouter = WrappedComponent => props => {
-    const params = useParams();
-    // etc... other react-router-dom v6 hooks
-    return (
-        <WrappedComponent
-            {...props}
-            params={params}
-            // etc...
-        />
-    );
+type RouterType = {
+    params: Params<string>
+}
+type StatePropsType = {
+    authorisedUserId: number | null
+    profile: ProfileType | null
+    status: string
+    isAuth: boolean
+}
+type DispatchPropsType = {
+    getUserProfile: (userId: number) => void
+    getStatus: (userId: number) => void
+    updateStatus: (status: string) => void
+    saveProfile: (profile: ProfileType) => Promise<void>
+    savePhoto : (photo: File) => Promise<void>
+}
+type OwnProps = {}
+type PropsType = StatePropsType & DispatchPropsType & OwnProps & RouterType;
+
+const withTypedRouter = <P extends object>(WrappedComponent: React.ComponentType<P & RouterType>) => {
+    return (props: P) => {
+        const params = useParams();
+        return <WrappedComponent {...props} params={params} />;
+    };
 };
 
-class ProfileContainer extends React.Component {
+class ProfileContainer extends React.Component<PropsType> {
 
     // обработчик ошибки
     catchUnhandledRejection = () => {
@@ -32,14 +48,14 @@ class ProfileContainer extends React.Component {
     }
 
     reFreshProfile() {
-        let userId = this.props.params.userId;
+        let userId: string | number | null = this.props.params.userId;
         if (!userId) {
             userId = this.props.authorisedUserId;
         }
 
         if (userId && !isNaN(Number(userId))) {
-            this.props.getUserProfile(userId);
-            this.props.getStatus(userId);
+            this.props.getUserProfile(Number(userId));
+            this.props.getStatus(Number(userId));
         } else {
             console.warn('Invalid userId:', userId);
             // Можно добавить редирект на логин или показать сообщение
@@ -57,7 +73,7 @@ class ProfileContainer extends React.Component {
         window.removeEventListener('unhandledrejection', this.catchUnhandledRejection);
     }
 
-    componentDidUpdate(prevProps, prevState, snapshot) {
+    componentDidUpdate(prevProps: PropsType) {
         if (this.props.params.userId !== prevProps.params.userId) {
             this.reFreshProfile();
         }
@@ -78,7 +94,7 @@ class ProfileContainer extends React.Component {
     }
 }
 
-let mapStateToProps = state => ({
+let mapStateToProps = (state: AppStateType): StatePropsType => ({
     profile: getAuthUserProfile(state),
     isAuth: getAuth(state),
     status: getProfilePageStatus(state),
@@ -86,7 +102,7 @@ let mapStateToProps = state => ({
 })
 
 export default compose(
-    withRouter,
+    withTypedRouter,
     withAuthComponent,
     connect(mapStateToProps, {getUserProfile, getStatus, updateStatus, savePhoto, saveProfile})
 )

@@ -1,13 +1,25 @@
-
 .nav {
     grid-area: n;
     background-color: cadetblue;
+    padding: 20px;
 }
 
 .item {
     color: white;
+    text-decoration: none;
+    padding-bottom: 10px;
 }
 
-.item.active {
+.active {
     color: gold;
+    text-decoration: none;
+}
+
+.setting {
+    padding-top: 20px;
+}
+
+.friends {
+    font-size: 30px;
+    padding-top: 10px;
 }

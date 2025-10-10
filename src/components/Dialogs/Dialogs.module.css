@@ -1,9 +1,43 @@
-.content {
-    grid-area: c;
-    background-color: deepskyblue;
+.dialogs {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
 }
 
-.content img {
-    width: 800px;
-    height: 500px;
+.dialogsItems {
+    padding: 10px;
+}
+
+.messages {
+    padding: 10px;
+}
+
+.dialog {
+    padding: 5px;
+    color: aliceblue;
+    text-decoration: none;
+}
+
+.dialog a {
+    color: darkslategray;
+    text-decoration: none;
+}
+
+.message {
+    padding: 5px;
+}
+
+.active {
+    color: gold;
+}
+
+.dialogsPage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.addMessage {
+    padding: 10px;
+    position: absolute;
+    bottom: 0;
 }

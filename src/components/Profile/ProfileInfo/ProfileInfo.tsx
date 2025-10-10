@@ -1,11 +1,21 @@
 import s from './ProfileInfo.module.css'
-import Preloader from "../../Common/Preloader/Preloader";
-import photoUrl from "../../../assets/images/photo.jpg"
-import ProfileStatusWIthHook from "./ProfileStatusWithHook";
-import React, {useState} from "react";
-import ProfileDataFormRedux from "./ProfileDataForm";
+import Preloader from '../../Common/Preloader/Preloader';
+import photoUrl from '../../../assets/images/photo.jpg';
+import ProfileStatusWIthHook from './ProfileStatusWithHook';
+import React, {ChangeEvent, FC, useState} from 'react';
+import ProfileDataFormRedux from './ProfileDataForm';
+import {ProfileType} from '../../../types/types';
 
-const ProfileInfo = ({profile, status, updateStatus, isOwner, savePhoto, saveProfile}) => {
+type PropsType = {
+    profile: ProfileType | null
+    status: string
+    updateStatus: (status: string) => void
+    isOwner: boolean
+    savePhoto: (photo: File) => Promise<void>
+    saveProfile: (profile: ProfileType) => Promise<void>
+}
+
+const ProfileInfo: FC<PropsType> = ({profile, status, updateStatus, isOwner, savePhoto, saveProfile}) => {
 
     let [editMode, setEditMode] = useState(false);
 
@@ -13,13 +23,13 @@ const ProfileInfo = ({profile, status, updateStatus, isOwner, savePhoto, savePro
         return <Preloader/>
     }
 
-    const onMainPhotoSelected = (e) => {
+    const onMainPhotoSelected = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files.length) {
             savePhoto(e.target.files[0])
         }
     }
 
-    const onSubmit = (formData) => {
+    const onSubmit = (formData: ProfileType) => {
         saveProfile(formData).then(
             () => {
                 setEditMode(false);
@@ -35,7 +45,7 @@ const ProfileInfo = ({profile, status, updateStatus, isOwner, savePhoto, savePro
             </div>
             <ProfileStatusWIthHook status={status} updateStatus={updateStatus}/>
             {editMode
-                ? <ProfileDataFormRedux initialValues={profile} profile={profile} onSubmit={onSubmit}/>
+                ? <ProfileDataFormRedux initialValues={profile} onSubmit={onSubmit}/>
                 : <ProfileData isOwner={isOwner} goToEditMode={() => {
                     setEditMode(true)
                 }} profile={profile}/>
@@ -44,7 +54,12 @@ const ProfileInfo = ({profile, status, updateStatus, isOwner, savePhoto, savePro
     )
 }
 
-const ProfileData = ({profile, isOwner, goToEditMode}) => {
+type ProfileDataTypes = {
+    profile: ProfileType
+    isOwner: boolean
+    goToEditMode: () => void
+}
+const ProfileData: FC<ProfileDataTypes> = ({profile, isOwner, goToEditMode}) => {
     return <div>
         {isOwner && <button onClick={goToEditMode}>edit</button>}
         <div>
@@ -67,7 +82,11 @@ const ProfileData = ({profile, isOwner, goToEditMode}) => {
     </div>
 }
 
-const Contact = ({contactTitle, contactValue}) => {
+type ContactType = {
+    contactTitle: string
+    contactValue: string
+}
+const Contact: FC<ContactType> = ({contactTitle, contactValue}) => {
     return <div className={s.contact}><b>{contactTitle}</b>: {contactValue}</div>
 }
 

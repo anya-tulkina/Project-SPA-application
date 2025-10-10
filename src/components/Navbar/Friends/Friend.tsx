@@ -1,14 +1,19 @@
 import s from './Friend.module.css';
+import {FC} from "react";
 
-const Friend = (props) => {
+type PropsType = {
+    img: string
+    name: string
+}
+const Friend: FC<PropsType> = ({name, img}) => {
 
     return (
         <div className={s.user}>
             <div className={s.userItem}>
-                <img src={props.img}/>
+                <img src={img}/>
             </div>
             <div className={s.userName}>
-                {props.name}
+                {name}
             </div>
         </div>
     )

@@ -1,29 +1,15 @@
-import React from "react";
-import s from './Users.module.css'
-
-let Paginator = ({totalUsersCount, pageSize, currentPage, onPageChanged}) => {
-
-    //Считаем сколько пользователей вкладок с юзерами на странице
-
-    let pagesCount = Math.ceil(totalUsersCount / pageSize);
-
-    // Создаем массив страниц юзеров
-
-    let pages = [];
-    for (let i = 1; i <= pagesCount; i++) {
-        pages.push(i + ' ');
-    }
-
-    return <div>
-        {pages.map(p => {
-            return <span
-                key={p.id}
-                className={currentPage === p && s.selectedPage} /*присваеваем класс выбранной странице*/
-                onClick={(e) => {
-                    onPageChanged(p)
-                }}>{p}</span>
-        })}
-    </div>
+.selectedPage {
+    font-weight: bold;
 }
 
-export default Paginator;
+.paginator {
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pageNumber {
+    border: solid 1px gray;
+    padding: 3px;
+}

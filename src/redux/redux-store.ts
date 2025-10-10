@@ -1,16 +1,14 @@
 import profileReducer from "./profile-reducer";
 import dialogsReducer from "./dialogs-reducer";
 import sidebarReducer from "./sidebar-reducer";
-import {applyMiddleware, combineReducers, configureStore} from "@reduxjs/toolkit";
+import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import usersReducer from "./users-reducer";
 import authReducer from "./auth-reducer";
-import {thunk} from "redux-thunk";
 import { reducer as formReducer } from 'redux-form';
 import newsReducer from "./news-reducer";
 import appReducer from "./app-reducer";
-import {compose} from "redux";
 
-let reducers = combineReducers({
+let rootReducer = combineReducers({
     profilePage: profileReducer,
     dialogsPage: dialogsReducer,
     usersPage: usersReducer,
@@ -21,11 +19,25 @@ let reducers = combineReducers({
     app: appReducer
 });
 
-const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = configureStore({reducer: reducers},compose(applyMiddleware(thunk)));
+const store = configureStore({
+    reducer: rootReducer,
+    // Thunk уже включен по умолчанию в Redux Toolkit
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            // Если нужны специальные настройки:
+            serializableCheck: {
+                ignoredActions: ['your/action/type'], // Игнорируемые actions
+                ignoredPaths: ['form'] // Игнорируемые пути в state
+            }
+        })
+    // Можно добавить кастомные middleware, если нужно
+    // .concat(yourCustomMiddleware)
+});
 
-// const store = configureStore({reducer: reducers}, applyMiddleware(thunk));
+type RootStateType = typeof rootReducer
+export type AppStateType = ReturnType<RootStateType>
 
+// @ts-ignore
 window.__store__ = store;
 
 export default store;

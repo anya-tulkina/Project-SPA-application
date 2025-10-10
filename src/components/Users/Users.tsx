@@ -1,21 +1,31 @@
-import React from "react";
-import s from './Users.module.css'
-import photoUrl from "../../assets/images/photo.jpg";
-import {NavLink} from "react-router-dom";
-import Paginator from "../Common/Pagination/Pagination";
-import User from "./User";
+import React, {FC} from 'react'
+import Paginator from '../Common/Pagination/Pagination'
+import User from './User'
+import {UserType} from '../../types/types'
 
-let Users = (props) => {
+type PropsType = {
+    totalUsersCount: number
+    pageSize: number
+    currentPage: number
+    onPageChanged: (pageNumber: number) => void
+    users: Array<UserType>
+    followingIsProgress: Array<number>
+    unfollow: (userId: number) => void
+    follow: (userId: number) => void
+}
+
+let Users: FC<PropsType> = ({currentPage, onPageChanged,
+             pageSize, totalUsersCount, users, ...props}) => {
 
     return <div>
-        <Paginator currentPage={props.currentPage} onPageChanged={props.onPageChanged} pageSize={props.pageSize}
-                   totalItemsCount={props.totalUsersCount}/>
+        <Paginator currentPage={currentPage} onPageChanged={onPageChanged} pageSize={pageSize}
+                   totalItemsCount={totalUsersCount}/>
 
-        {props.users.map(u => <User key={u.id} user={u} followingIsProgress={props.followingIsProgress}
+        {users.map(u => <User key={u.id} user={u} followingIsProgress={props.followingIsProgress}
                                     unfollow={props.unfollow}
                                     follow={props.follow}
         />)}
     </div>
 }
 
-export default Users;
+export default Users

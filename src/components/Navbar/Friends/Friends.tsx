@@ -1,7 +1,12 @@
 import s from './Friend.module.css';
 import Friend from "./Friend";
+import {FC} from "react";
+import {UserType} from "../../../types/types";
 
-const Friends = (props) => {
+type PropsType = {
+    friends: UserType[]
+}
+const Friends: FC<PropsType> = (props) => {
 
     let friendsElements = props.friends.map(f => <Friend name={f.name} img={f.photos.small} key={f.id}/>);
 
@@ -10,7 +15,6 @@ const Friends = (props) => {
             <div className={s.friendsItem}>
                 {friendsElements}
             </div>
-            <Friend />
         </div>
     )
 }

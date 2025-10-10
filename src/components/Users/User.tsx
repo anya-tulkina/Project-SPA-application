@@ -1,29 +1,48 @@
-import React from "react";
+import React, {FC} from "react";
 import s from './Users.module.css'
 import photoUrl from "../../assets/images/photo.jpg";
 import {NavLink} from "react-router-dom";
+import {UserType} from "../../types/types";
 
-let User = ({user, followingIsProgress, unfollow, follow}) => {
+type StateType = {
+    user: UserType
+    followingIsProgress: Array<number>
+}
+type DispatchType = {
+    unfollow: (userId: number) => void
+    follow: (userId: number) => void
+}
+
+type OwnType = {}
+
+type PropsType = StateType & DispatchType & OwnType
+
+let User: FC<PropsType> = ({user, followingIsProgress, unfollow, follow}) => {
+
+    const photoUserUrl = user.photos.small != null ? user.photos.small : photoUrl;
+    const isFollowingInProgress = followingIsProgress.some(id => id === user.id);
+    const handleUnFollowing = () => {
+        unfollow(user.id)
+    };
+    const handleFollowing = () => {
+        follow(user.id)
+    };
 
     return <div>
             <span>
                 <div>
                     <NavLink to={'/profile/' + user.id}>
-                    <img src={user.photos.small != null ? user.photos.small : photoUrl} className={s.photoUsers}
+                    <img src={photoUserUrl} className={s.photoUsers}
                          alt='user'/>
                 </NavLink>
                 </div>
                 <div>
                     {user.followed ?
-                        <button disabled={followingIsProgress.some(id => id === user.id)}
-                                onClick={() => {
-                                    unfollow(user.id)
-                                }}>
+                        <button disabled={isFollowingInProgress}
+                                onClick={handleUnFollowing}>
                             UnFollow</button> :
-                        <button disabled={followingIsProgress.some(id => id === user.id)}
-                                onClick={() => {
-                                    follow(user.id);
-                                }}>Follow</button>}
+                        <button disabled={isFollowingInProgress}
+                                onClick={handleFollowing}>Follow</button>}
 
                 </div>
             </span>

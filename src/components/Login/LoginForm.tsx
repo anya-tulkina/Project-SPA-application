@@ -1,21 +1,27 @@
-import React from "react";
-import {Field, reduxForm} from "redux-form";
+import React, {FC} from "react";
+import {InjectedFormProps, reduxForm} from "redux-form";
 import {creatField, Input} from "../Common/FormsControl/FormsControl";
 import {maxLengthCreator, required} from "../utils/validators/validators";
 import style from "./../Common/FormsControl/FormsControl.module.css";
+import {FormDataType, LoginFormTypesKeys} from "./Login";
 
 const maxLength = maxLengthCreator(20);
 
-const LoginForm = ({handleSubmit, error, captchaUrl}) => {
+type OwnType = {
+    captchaUrl: string | null
+}
+
+const LoginForm: FC<InjectedFormProps<FormDataType> & OwnType> = ({handleSubmit, error, captchaUrl}) => {
 
     return (
         <form onSubmit={handleSubmit}>
-            {creatField('email', [required, maxLength], 'Email', Input)}
-            {creatField('password', [required, maxLength], 'Password', Input, {type: 'password'})}
-            {creatField(null, [], 'Password', Input, {type: 'checkbox'}, 'remember me')}
+            {/*call creatField, give argument for Generic*/}
+            {creatField<LoginFormTypesKeys>('email', [required, maxLength], undefined, Input)}
+            {creatField<LoginFormTypesKeys>('password', [required, maxLength], 'Password', Input, {type: 'password'})}
+            {creatField<LoginFormTypesKeys>('rememberMe', [], '', Input, {type: 'checkbox'}, 'remember me')}
 
             {captchaUrl && <img src={captchaUrl}/>}
-            {captchaUrl  && creatField('captcha', [required], 'Symbols far a photo', Input)}
+            {captchaUrl  && creatField<LoginFormTypesKeys>('captcha', [required], 'Symbols far a photo', Input)}
 
             {error && <div className={style.formSummaryError}>
                 {error}
@@ -27,4 +33,5 @@ const LoginForm = ({handleSubmit, error, captchaUrl}) => {
     )
 }
 
-export const LoginReduxForm = reduxForm({form: 'login'})(LoginForm);
+
+export const LoginReduxForm = reduxForm<FormDataType, OwnType>({form: 'login'})(LoginForm);

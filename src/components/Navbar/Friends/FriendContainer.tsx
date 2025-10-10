@@ -1,9 +1,20 @@
 import React from "react";
 import {connect} from "react-redux";
-import {getFriends, setFriendsNavBar} from "../../../redux/sidebar-reducer";
+import {getFriends} from "../../../redux/sidebar-reducer";
 import Friends from "./Friends";
+import {AppStateType} from "../../../redux/redux-store";
+import {UserType} from "../../../types/types";
+import {compose} from "redux";
 
-class FriendContainer extends React.Component {
+type MapDispatchToPropsType = {
+    getFriends: () => void
+}
+type MapStateToPropsType = {
+    friends: UserType[]
+}
+type PropsType = MapStateToPropsType & MapDispatchToPropsType;
+
+class FriendContainer extends React.Component<PropsType> {
     componentDidMount() {
         this.props.getFriends()
     }
@@ -14,10 +25,12 @@ class FriendContainer extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = (state: AppStateType): MapStateToPropsType => {
     return {
         friends: state.sideBar.friends
     }
 }
 
-export default connect(mapStateToProps, {getFriends})(FriendContainer);
+export default compose(
+    connect(mapStateToProps, {getFriends})
+)(FriendContainer) as React.ComponentType<PropsType>;

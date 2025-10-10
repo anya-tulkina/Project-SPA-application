@@ -1,21 +1,10 @@
-import React from "react";
-import {Navigate} from "react-router-dom";
-import {connect} from "react-redux";
+import React, {Suspense} from "react";
+import Preloader from "../Common/Preloader/Preloader";
 
-let mapStateToProps = state => {
-    return {
-        isAuth: state.auth.isAuth
+export const withSuspense = (Component) => {
+    return (props) => {
+        return <Suspense fallback={<Preloader/>}>
+            <Component {...props}/>
+        </Suspense>
     }
-}
-
-export const withAuthComponent = (Component) => {
-
-    class NavigatorComponent extends React.Component {
-        render() {
-            if (!this.props.isAuth) return <Navigate to='/login'/>
-            return <Component {...this.props}/>
-        }
-    }
-
-    return connect(mapStateToProps)(NavigatorComponent);
 }

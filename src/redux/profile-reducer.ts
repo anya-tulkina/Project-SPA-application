@@ -1,6 +1,8 @@
-import {usersApi, profileApi} from "../api/api";
-import profile from "../components/Profile/Profile";
+import {MeResultsCodes, profileApi} from "../api/api";
 import {stopSubmit} from "redux-form";
+import {PhotosType, PostsType, ProfileType} from "../types/types";
+import {ThunkAction} from "redux-thunk";
+import {AppStateType} from "./redux-store";
 
 const ADD_POST = 'profile/ADD-POST';
 const SET_USER_PROFILE = 'profile/SET_USER_PROFILE';
@@ -12,12 +14,15 @@ let initialState = {
     posts: [
         {id: 1, message: 'Hi', likesCount: 10},
         {id: 2, message: 'Bye', likesCount: 5},
-    ],
-    profile: null,
-    status: ''
+    ] as Array<PostsType>,
+    profile: null as ProfileType | null,
+    status: '',
+    aboutMe: ''
 };
+export type InitialStateType = typeof initialState;
 
-const profileReducer = (state = initialState, action) => {
+const profileReducer = (state = initialState,
+                        action: ActionsTypes): InitialStateType => {
 
     switch (action.type) {
         case ADD_POST:
@@ -51,51 +56,89 @@ const profileReducer = (state = initialState, action) => {
     }
 }
 
-export const addPostActionCreator = (newPostElement) => ({type: ADD_POST, newPostElement});
-export const setUserProfile = (profile) => ({type: SET_USER_PROFILE, profile});
-export const setStatus = (status) => ({type: SET_STATUS, status});
-export const deletePost = (postId) => ({type: DELETE_POST, postId});
-export const savePhotoSuccess = (photos) => ({type: SAVE_PHOTO_SUCCESS, photos});
+type ActionsTypes = AddPostActionCreatorType | SetUserProfileType | SetStatusType | DeletePostType | SavePhotoSuccess;
 
-export const getUserProfile = (userId) => async (dispatch) => {
-    let response = await profileApi.getProfile(userId);
-    dispatch(setUserProfile(response.data));
-};
+type AddPostActionCreatorType = {
+    type: typeof ADD_POST
+    newPostElement: string
+}
+export const addPostActionCreator = (newPostElement: string): AddPostActionCreatorType =>
+    ({type: ADD_POST, newPostElement})
 
-export const getStatus = (userId) => async (dispatch) => {
-    let response = await profileApi.getStatus(userId);
-    dispatch(setStatus(response.data));
-};
+type SetUserProfileType = {
+    type: typeof SET_USER_PROFILE
+    profile: ProfileType
+}
+export const setUserProfile = (profile: ProfileType): SetUserProfileType => ({type: SET_USER_PROFILE, profile})
 
-export const updateStatus = (status) => async (dispatch) => {
-    // try...catch обработчик ошибок, при этом обработчик window не срабатывает
-    try {
-        let response = await profileApi.updateStatus(status);
-        if (response.data.resultCode === 0) {
-            dispatch(setStatus(status));
+type SetStatusType = {
+    type: typeof SET_STATUS
+    status: string
+}
+export const setStatus = (status: string): SetStatusType => ({type: SET_STATUS, status});
+
+type DeletePostType = {
+    type: typeof DELETE_POST
+    postId: number
+}
+export const deletePost = (postId: number): DeletePostType => ({type: DELETE_POST, postId});
+
+type SavePhotoSuccess = {
+    type: typeof SAVE_PHOTO_SUCCESS
+    photos: PhotosType
+}
+export const savePhotoSuccess = (photos: PhotosType): SavePhotoSuccess => ({type: SAVE_PHOTO_SUCCESS, photos});
+
+type ThunksTypes = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>;
+
+export const getUserProfile = (userId: number): ThunksTypes =>
+    async (dispatch) => {
+        let data = await profileApi.getProfile(userId);
+        dispatch(setUserProfile(data.data));
+    };
+
+export const getStatus = (userId: number): ThunksTypes =>
+    async (dispatch) => {
+        try {
+            let response = await profileApi.getStatus(userId);
+            dispatch(setStatus(response.data));
+        } catch (error) {
+            console.log(error);
         }
-    } catch (error) {
-        console.log(error);
-    }
-};
+    };
 
-export const savePhoto = (file) => async (dispatch) => {
-    let response = await profileApi.savePhoto(file);
-    if (response.data.resultCode === 0) {
-        dispatch(savePhotoSuccess(response.data.data.photos));
-    }
-};
+export const updateStatus = (status: string): ThunksTypes =>
+    async (dispatch) => {
+        // try...catch обработчик ошибок, при этом обработчик window не срабатывает
+        try {
+            let data = await profileApi.updateStatus(status);
+            if (data.resultCode === MeResultsCodes.Success) {
+                dispatch(setStatus(status));
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
-export const saveProfile = (profile) => async (dispatch, getState) => {
-    let userId = getState().auth.userId;
-    let response = await profileApi.saveProfile(profile);
+export const savePhoto = (file: string): ThunksTypes =>
+    async (dispatch) => {
+        let response = await profileApi.savePhoto(file);
+        if (response.data.resultCode === 0) {
+            dispatch(savePhotoSuccess(response.data.data.photos));
+        }
+    };
 
-    if (response.data.resultCode === 0) {
-        dispatch(getUserProfile(userId));
-    } else {
-        dispatch(stopSubmit('edit-profile', {_error: response.data.messages[0]}))
-        return Promise.reject(response.data.messages[0]);
-    }
-};
+export const saveProfile = (profile: ProfileType) =>
+    async (dispatch: any, getState: any) => {
+        let userId = getState().auth.userId;
+        let response = await profileApi.saveProfile(profile);
+
+        if (response.data.resultCode === 0) {
+            dispatch(getUserProfile(userId));
+        } else {
+            dispatch(stopSubmit('edit-profile', {_error: response.data.messages[0]}))
+            return Promise.reject(response.data.messages[0]);
+        }
+    };
 
 export default profileReducer;

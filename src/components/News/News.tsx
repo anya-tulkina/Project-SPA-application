@@ -1,13 +1,15 @@
-import React from "react";
-import {required} from "../utils/validators/validators";
-import s from "../Profile/MyPosts/MyPosts.module.css";
+import React, {FC} from "react";
 import New from "./New/New";
 import NewsFormRedux from "./NewsFormRedux";
+import {NewsType} from "../../types/types";
 
+type PropsType = {
+    news: NewsType[]
+    sendNewsCreator: (news: string) => void;
+}
+const News: FC<PropsType> = ({news, sendNewsCreator}) => {
 
-const News = ({news, sendNewsCreator}) => {
-
-    let addNew = (values) => {
+    let addNew = (values: {addNews : string}) => {
         sendNewsCreator(values.addNews);
     }
 

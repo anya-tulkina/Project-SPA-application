@@ -1,11 +1,16 @@
 import s from './MyPosts.module.css'
 import Post from "./Post/Post";
-import React from "react";
+import React, {FC} from "react";
 import MyPostsRedux from "./MyPostsReduxForm";
+import {PostsType} from "../../../types/types";
 
-const MyPosts = React.memo((props) => {
+type PropsTypes = {
+    posts: PostsType[]
+    addPost: (newPostElement: string) => void
+}
+const MyPosts: FC<PropsTypes>  = React.memo((props) => {
 
-    let onAddPost = (values) => {
+    let onAddPost = (values: {newPostElement: string}) => {
         props.addPost(values.newPostElement);
     };
 
