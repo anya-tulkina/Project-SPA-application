@@ -1,9 +1,10 @@
-import {MeResultsCodes, usersApi} from "../api/api";
+import {ResultsCodesEnum} from "../api/api";
 import {updateObjectInArray} from "../components/utils/object-helpers";
 import {UserType} from "../types/types";
 import {Dispatch} from "redux";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType, InferActionsTypes} from "./redux-store";
+import {usersApi} from "../api/users-api";
 
 let initialState = {
     users: [] as Array<UserType>,
@@ -60,7 +61,7 @@ const usersReducer = (state = initialState, action: ActionsTypes): InitialStateT
     }
 }
 
-type ActionsTypes = InferActionsTypes<typeof actions>
+type ActionsTypes = InferActionsTypes<typeof actions>;
 
 const actions = {
     followSuccess: (userId: number) =>
@@ -84,8 +85,8 @@ const actions = {
         ({type: 'TOGGLE_IS_FOLLOWING', isFetching, userId} as const)
 
 }
-type DispatchType = Dispatch<ActionsTypes>
-type ThunksTypes = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
+type DispatchType = Dispatch<ActionsTypes>;
+type ThunksTypes = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>;
 
 export const requestUsers = (currentPage: number, pageSize: number): ThunksTypes =>
     async (dispatch) => {
@@ -103,8 +104,8 @@ export const followUnfollowFlow =
            actionCreate: (userId: number) => ActionsTypes, userId: number) => {
 
         dispatch(actions.toggleFollowingUsers(true, userId));
-        let response = await methodApi(userId);
-        if (response.resultCode === MeResultsCodes.Success) {
+        let data = await methodApi(userId);
+        if (data.resultCode === ResultsCodesEnum.Success) {
             dispatch(actionCreate(userId))
         }
         dispatch(actions.toggleFollowingUsers(false, userId));

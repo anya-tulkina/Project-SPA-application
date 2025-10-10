@@ -1,6 +1,5 @@
 import {NewsType} from "../types/types";
-
-const SEND_NEWS = 'news/SEND_NEWS';
+import {InferActionsTypes} from "./redux-store";
 
 let initialState = {
     news: [
@@ -13,7 +12,7 @@ export type initialStateType = typeof initialState;
 const newsReducer = (state = initialState,
                      action: ActionsType): initialStateType => {
     switch (action.type) {
-        case SEND_NEWS:
+        case 'SEND_NEWS':
             return {
                 ...state,
                 news: [...state.news, {id: 3, news: action.news}],
@@ -23,14 +22,11 @@ const newsReducer = (state = initialState,
     }
 }
 
-type ActionsType = SendNewsCreatorType;
+type ActionsType = InferActionsTypes<typeof actionsNews>;
 
-type SendNewsCreatorType = {
-    type: typeof SEND_NEWS
-    news: string
+export const actionsNews = {
+   sendNewsCreator: (news: string) =>
+        ({type: 'SEND_NEWS', news} as const)
 }
-export const sendNewsCreator = (news: string): SendNewsCreatorType =>
-    ({type: SEND_NEWS, news});
-
 
 export default newsReducer;

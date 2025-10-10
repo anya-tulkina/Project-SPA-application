@@ -1,10 +1,8 @@
-import {usersApi} from "../api/api";
 import {UserType} from "../types/types";
 import {Dispatch} from "redux";
-import {AppStateType} from "./redux-store";
+import {AppStateType, InferActionsTypes} from "./redux-store";
 import {ThunkAction} from "redux-thunk";
-
-let USERS_NAV_BAR = 'friends_nav/USERS_NAV_BAR';
+import {usersApi} from "../api/users-api";
 
 let initialState = {
     friends: []
@@ -17,7 +15,7 @@ export type InitialStateType = {
 const sidebarReducer =
     (state = initialState, action: ActionsTypes): InitialStateType => {
         switch (action.type) {
-            case USERS_NAV_BAR:
+            case 'USERS_NAV_BAR':
                 return {
                     ...state,
                     friends: action.friends
@@ -27,24 +25,20 @@ const sidebarReducer =
         }
     }
 
-type ActionsTypes = SetFriendsNavBarType;
+type ActionsTypes = InferActionsTypes<typeof actions>;
 
 
 type DispatchType = Dispatch<ActionsTypes>
 type ThunksTypes = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>
 
-type SetFriendsNavBarType = {
-    type: typeof USERS_NAV_BAR
-    friends: Array<UserType>
-}
-export const setFriendsNavBar = (friends: Array<UserType>): SetFriendsNavBarType => {
-    return {type: USERS_NAV_BAR, friends}
+const actions = {
+    setFriendsNavBar: (friends: Array<UserType>) => ({type: 'USERS_NAV_BAR', friends} as const)
 }
 
 export const getFriends = (): ThunksTypes =>
     async (dispatch: DispatchType) => {
         const data = await usersApi.getFriends();
-        dispatch(setFriendsNavBar(data.items))
-}
+        dispatch(actions.setFriendsNavBar(data.items))
+    }
 
 export default sidebarReducer;

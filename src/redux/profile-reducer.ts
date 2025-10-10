@@ -1,8 +1,9 @@
-import {MeResultsCodes, profileApi} from "../api/api";
+import {ResultsCodesEnum} from "../api/api";
 import {stopSubmit} from "redux-form";
 import {PhotosType, PostsType, ProfileType} from "../types/types";
 import {ThunkAction} from "redux-thunk";
 import {AppStateType, InferActionsTypes} from "./redux-store";
+import {profileApi} from "../api/profile-api";
 
 let initialState = {
     posts: [
@@ -86,7 +87,7 @@ export const updateStatus = (status: string): ThunksTypes =>
         // try...catch обработчик ошибок, при этом обработчик window не срабатывает
         try {
             let data = await profileApi.updateStatus(status);
-            if (data.resultCode === MeResultsCodes.Success) {
+            if (data.resultCode === ResultsCodesEnum.Success) {
                 dispatch(actions.setStatus(status));
             }
         } catch (error) {
@@ -96,9 +97,9 @@ export const updateStatus = (status: string): ThunksTypes =>
 
 export const savePhoto = (file: string): ThunksTypes =>
     async (dispatch) => {
-        let response = await profileApi.savePhoto(file);
-        if (response.data.resultCode === 0) {
-            dispatch(actions.savePhotoSuccess(response.data.data.photos));
+        let data = await profileApi.savePhoto(file);
+        if (data.resultCode === 0) {
+            dispatch(actions.savePhotoSuccess(data.data.photos));
         }
     };
 

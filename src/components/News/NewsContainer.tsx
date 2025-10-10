@@ -1,7 +1,7 @@
 import React from "react";
 import {connect} from "react-redux";
 import News from "./News";
-import {sendNewsCreator} from "../../redux/news-reducer";
+import {actionsNews} from "../../redux/news-reducer";
 import {AppStateType} from "../../redux/redux-store";
 
 let mapStateToProps = (state: AppStateType) => {
@@ -11,4 +11,4 @@ let mapStateToProps = (state: AppStateType) => {
 }
 
 
-export default connect(mapStateToProps, {sendNewsCreator})(News);
+export default connect(mapStateToProps, {sendNewsCreator: actionsNews.sendNewsCreator})(News);

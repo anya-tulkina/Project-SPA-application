@@ -1,4 +1,4 @@
-import {sendMessage} from "../../redux/dialogs-reducer";
+import {actionsDialogs} from "../../redux/dialogs-reducer";
 import Dialogs from "./Dialogs";
 import {connect} from "react-redux";
 import React from "react";
@@ -13,7 +13,7 @@ let mapStateToProps = (state: AppStateType) => {
     }
 }
 const DialogsContainer = compose(
-    connect(mapStateToProps, {sendMessage}),
+    connect(mapStateToProps, {sendMessage: actionsDialogs.sendMessage}),
     // withAuthComponent // если нужно
 )(Dialogs);
 
