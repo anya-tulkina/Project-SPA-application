@@ -1,0 +1,8 @@
+.userItem img {
+    width: 40px;
+    border-radius: 50%;
+}
+
+.userName {
+    font-size: 10px;
+}
