@@ -5,8 +5,8 @@ import {Navigate} from "react-router-dom";
 import {LoginReduxForm} from "./LoginForm";
 import {AppStateType} from "../../redux/redux-store";
 
-// Form`s all keys
-export type LoginFormTypesKeys = keyof FormDataType;
+// Form`s all keys. Extract taking only string from FormDataType
+export type LoginFormTypesKeys = Extract<keyof FormDataType, string>;
 
 export type FormDataType = {
     email: string
