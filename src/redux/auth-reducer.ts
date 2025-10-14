@@ -1,7 +1,6 @@
 import {ResultsCodesEnum, ResultsCodesCaptchaEnum} from "../api/api";
-import {stopSubmit} from "redux-form";
-import {ThunkAction} from "redux-thunk";
-import {AppStateType, InferActionsTypes} from "./redux-store";
+import {FormAction, stopSubmit} from "redux-form";
+import {InferActionsTypes, ThunksTypes} from "./redux-store";
 import {authApi} from "../api/auth-api";
 import {securityApi} from "../api/security-api";
 
@@ -33,7 +32,7 @@ const authReducer = (state = initialState,
 }
 
 type ActionsTypes = InferActionsTypes<typeof actions>;
-type ThunksTypes = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>;
+type ThunkType = ThunksTypes<ActionsTypes | FormAction>
 
 const actions = {
     setAuthUserData: (userId: number, email: string,
@@ -43,7 +42,7 @@ const actions = {
         ({type: 'GET_CAPTCHA_URL_SUCCESS', payload: {captchaUrl}} as const),
 }
 
-export const getAuthUserData = (): ThunksTypes =>
+export const getAuthUserData = (): ThunkType =>
     async (dispatch) => {
         let data = await authApi.me();
         if (data.resultCode === ResultsCodesEnum.Success) {
@@ -53,8 +52,8 @@ export const getAuthUserData = (): ThunksTypes =>
     };
 
 export const loginAuth = (email: string, password: string,
-                          rememberMe: boolean, captcha: string) =>
-    async (dispatch: any) => {
+                          rememberMe: boolean, captcha: string): ThunkType =>
+    async (dispatch) => {
         let data = await authApi.login(email, password, rememberMe, captcha);
         if (data.resultCode === 0) {
             dispatch(getAuthUserData());
@@ -67,7 +66,7 @@ export const loginAuth = (email: string, password: string,
         }
     };
 
-export const getCaptchaUrl = (): ThunksTypes =>
+export const getCaptchaUrl = (): ThunkType =>
     async (dispatch) => {
         let data = await securityApi.getCaptcha();
         const captchaUrl = data.url;
@@ -75,7 +74,7 @@ export const getCaptchaUrl = (): ThunksTypes =>
 
     };
 
-export const logout = (): ThunksTypes =>
+export const logout = (): ThunkType =>
     async (dispatch) => {
         let data = await authApi.logout();
         if (data.resultCode === ResultsCodesEnum.Success) {

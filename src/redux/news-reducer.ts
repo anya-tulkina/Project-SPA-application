@@ -7,7 +7,6 @@ let initialState = {
         {id: 2, news: "I'm Anna"}
     ] as Array<NewsType>
 };
-export type initialStateType = typeof initialState;
 
 const newsReducer = (state = initialState,
                      action: ActionsType): initialStateType => {
@@ -30,3 +29,5 @@ export const actionsNews = {
 }
 
 export default newsReducer;
+
+type initialStateType = typeof initialState;

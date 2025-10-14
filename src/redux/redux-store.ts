@@ -1,12 +1,13 @@
 import profileReducer from "./profile-reducer";
 import dialogsReducer from "./dialogs-reducer";
 import sidebarReducer from "./sidebar-reducer";
-import {combineReducers, configureStore} from "@reduxjs/toolkit";
+import {Action, combineReducers, configureStore} from "@reduxjs/toolkit";
 import usersReducer from "./users-reducer";
 import authReducer from "./auth-reducer";
 import { reducer as formReducer } from 'redux-form';
 import newsReducer from "./news-reducer";
 import appReducer from "./app-reducer";
+import {ThunkAction} from "redux-thunk";
 
 let rootReducer = combineReducers({
     profilePage: profileReducer,
@@ -36,6 +37,8 @@ const store = configureStore({
 
 type PropertiesTypes<T> = T extends {[key: string]: infer U } ? U : never;
 export type InferActionsTypes<T extends {[key: string]: (...args: any[]) => any}> = ReturnType<PropertiesTypes<T>>;
+
+export type ThunksTypes<A extends Action, R = Promise<void>> = ThunkAction<R, AppStateType, unknown, A>;
 
 type RootStateType = typeof rootReducer;
 export type AppStateType = ReturnType<RootStateType>;

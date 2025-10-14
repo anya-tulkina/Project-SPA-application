@@ -1,8 +1,7 @@
 import {ResultsCodesEnum} from "../api/api";
-import {stopSubmit} from "redux-form";
+import {FormAction, stopSubmit} from "redux-form";
 import {PhotosType, PostsType, ProfileType} from "../types/types";
-import {ThunkAction} from "redux-thunk";
-import {AppStateType, InferActionsTypes} from "./redux-store";
+import {InferActionsTypes, ThunksTypes} from "./redux-store";
 import {profileApi} from "../api/profile-api";
 
 let initialState = {
@@ -14,7 +13,6 @@ let initialState = {
     status: '',
     aboutMe: ''
 };
-export type InitialStateType = typeof initialState;
 
 const profileReducer = (state = initialState,
                         action: ActionsTypes): InitialStateType => {
@@ -51,7 +49,6 @@ const profileReducer = (state = initialState,
     }
 }
 
-type ActionsTypes = InferActionsTypes<typeof actions>;
 
 export const actions = {
      addPostActionCreator: (newPostElement: string)=> ({type: 'ADD_POST', newPostElement} as const),
@@ -64,15 +61,14 @@ export const actions = {
 
      savePhotoSuccess: (photos: PhotosType) => ({type: 'SAVE_PHOTO_SUCCESS', photos} as const)
 }
-type ThunksTypes = ThunkAction<Promise<void>, AppStateType, unknown, ActionsTypes>;
 
-export const getUserProfile = (userId: number): ThunksTypes =>
+export const getUserProfile = (userId: number): ThunkType =>
     async (dispatch) => {
         let data = await profileApi.getProfile(userId);
         dispatch(actions.setUserProfile(data.data));
     };
 
-export const getStatus = (userId: number): ThunksTypes =>
+export const getStatus = (userId: number): ThunkType =>
     async (dispatch) => {
         try {
             let response = await profileApi.getStatus(userId);
@@ -82,7 +78,7 @@ export const getStatus = (userId: number): ThunksTypes =>
         }
     };
 
-export const updateStatus = (status: string): ThunksTypes =>
+export const updateStatus = (status: string): ThunkType =>
     async (dispatch) => {
         // try...catch обработчик ошибок, при этом обработчик window не срабатывает
         try {
@@ -95,7 +91,7 @@ export const updateStatus = (status: string): ThunksTypes =>
         }
     };
 
-export const savePhoto = (file: string): ThunksTypes =>
+export const savePhoto = (file: string): ThunkType =>
     async (dispatch) => {
         let data = await profileApi.savePhoto(file);
         if (data.resultCode === 0) {
@@ -103,8 +99,8 @@ export const savePhoto = (file: string): ThunksTypes =>
         }
     };
 
-export const saveProfile = (profile: ProfileType) =>
-    async (dispatch: any, getState: any) => {
+export const saveProfile = (profile: ProfileType): ThunkType =>
+    async (dispatch, getState) => {
         let userId = getState().auth.userId;
         let response = await profileApi.saveProfile(profile);
 
@@ -117,3 +113,7 @@ export const saveProfile = (profile: ProfileType) =>
     };
 
 export default profileReducer;
+
+type InitialStateType = typeof initialState;
+type ActionsTypes = InferActionsTypes<typeof actions>;
+type ThunkType = ThunksTypes<ActionsTypes | FormAction>
