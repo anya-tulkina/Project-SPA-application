@@ -15,11 +15,11 @@ export const profileApi = {
         const response = await instance.put<APIResponseType>(`profile/status/`, {status: status});
         return response.data;
     },
-    savePhoto(photoFile: any) {
+    async savePhoto(photoFile: string) {
         const formData = new FormData();
         formData.append('image', photoFile);
 
-        return instance.put<APIResponseType<SaveDataResponseType>>(`profile/photo`, formData, {
+        return await instance.put<APIResponseType<SaveDataResponseType>>(`profile/photo`, formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
