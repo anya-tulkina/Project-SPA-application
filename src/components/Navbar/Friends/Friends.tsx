@@ -8,7 +8,7 @@ type PropsType = {
 }
 const Friends: FC<PropsType> = (props) => {
 
-    let friendsElements = props.friends.map(f => <Friend name={f.name} img={f.photos.small} key={f.id}/>);
+    const friendsElements = props.friends.map(f => <Friend name={f.name} img={f.photos.small} key={f.id}/>);
 
     return (
         <div className={s.user}>

@@ -1,16 +1,21 @@
 import React from "react";
 import {Navigate} from "react-router-dom";
 import {connect} from "react-redux";
+import {AppStateType} from "../../redux/redux-store";
 
-let mapStateToProps = state => {
+let mapStateToProps = (state: AppStateType) => {
     return {
         isAuth: state.auth.isAuth
     }
 }
 
-export const withAuthComponent = (Component) => {
+type NavigatorComponentType = {
+    isAuth: boolean
+}
 
-    class NavigatorComponent extends React.Component {
+export const withAuthComponent = (Component: any) => {
+
+    class NavigatorComponent extends React.Component<NavigatorComponentType> {
         render() {
             if (!this.props.isAuth) return <Navigate to='/login'/>
             return <Component {...this.props}/>

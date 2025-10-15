@@ -1,36 +1,18 @@
-import React from "react";
-import {connect} from "react-redux";
+import React, {FC, useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {getFriends} from "../../../redux/sidebar-reducer";
 import Friends from "./Friends";
-import {AppStateType} from "../../../redux/redux-store";
-import {UserType} from "../../../types/types";
-import {compose} from "redux";
+import {AppDispatch, AppStateType} from "../../../redux/redux-store";
 
-type MapDispatchToPropsType = {
-    getFriends: () => void
-}
-type MapStateToPropsType = {
-    friends: UserType[]
-}
-type PropsType = MapStateToPropsType & MapDispatchToPropsType;
+const FriendContainer: FC = () => {
+    const dispatch: AppDispatch = useDispatch();
+    const friends = useSelector((state: AppStateType) => state.sideBar.friends);
 
-class FriendContainer extends React.Component<PropsType> {
-    componentDidMount() {
-        this.props.getFriends()
-    }
-    render() {
-        return (
-            <Friends friends={this.props.friends}/>
-        )
-    }
+    useEffect(() => {
+        dispatch(getFriends());
+    }, [dispatch]);
+
+    return <Friends friends={friends} />;
 }
 
-const mapStateToProps = (state: AppStateType): MapStateToPropsType => {
-    return {
-        friends: state.sideBar.friends
-    }
-}
-
-export default compose(
-    connect(mapStateToProps, {getFriends})
-)(FriendContainer) as React.ComponentType<PropsType>;
+export default FriendContainer;

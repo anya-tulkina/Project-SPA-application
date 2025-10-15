@@ -38,6 +38,8 @@ const store = configureStore({
 type PropertiesTypes<T> = T extends {[key: string]: infer U } ? U : never;
 export type InferActionsTypes<T extends {[key: string]: (...args: any[]) => any}> = ReturnType<PropertiesTypes<T>>;
 
+export type AppDispatch = typeof store.dispatch;
+
 export type ThunksTypes<A extends Action, R = Promise<void>> = ThunkAction<R, AppStateType, unknown, A>;
 
 type RootStateType = typeof rootReducer;
