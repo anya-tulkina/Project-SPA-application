@@ -1,26 +1,18 @@
-import React from "react";
+import React, {ComponentType, FC} from "react";
 import {Navigate} from "react-router-dom";
-import {connect} from "react-redux";
+import {useSelector} from "react-redux";
 import {AppStateType} from "../../redux/redux-store";
 
-let mapStateToProps = (state: AppStateType) => {
-    return {
-        isAuth: state.auth.isAuth
-    }
-}
 
-type NavigatorComponentType = {
-    isAuth: boolean
-}
+export const withAuthComponent = <P extends object>(Component: ComponentType<P>): FC<P> => {
 
-export const withAuthComponent = (Component: any) => {
+    const NavigatorComponent: FC<P> = (props) => {
 
-    class NavigatorComponent extends React.Component<NavigatorComponentType> {
-        render() {
-            if (!this.props.isAuth) return <Navigate to='/login'/>
-            return <Component {...this.props}/>
-        }
+        const isAuth = useSelector((state: AppStateType) => state.auth.isAuth);
+
+        if (!isAuth) return <Navigate to='/login' replace/>
+        return <Component {...props}/>
     }
 
-    return connect(mapStateToProps)(NavigatorComponent);
+    return NavigatorComponent;
 }

@@ -1,109 +1,90 @@
 import Profile from "./Profile";
-import React from "react";
-import {connect} from "react-redux";
+import React, {FC, memo, useCallback, useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import {getUserProfile, getStatus, updateStatus, savePhoto, saveProfile} from "../../redux/profile-reducer";
-import {Params, useParams} from "react-router-dom";
-import {compose} from "redux";
+import {Navigate, useParams} from "react-router-dom";
 import {
     getAuth,
     getAuthUserId,
     getAuthUserProfile,
     getProfilePageStatus
 } from "../../redux/profile-selectors";
-import {withAuthComponent} from "../hoc/withAuthNavigator";
+import {AppDispatch} from "../../redux/redux-store";
 import {ProfileType} from "../../types/types";
-import {AppStateType} from "../../redux/redux-store";
 
-type RouterType = {
-    params: Params<string>
-}
-type StatePropsType = {
-    authorisedUserId: number | null
-    profile: ProfileType | null
-    status: string
-    isAuth: boolean
-}
-type DispatchPropsType = {
-    getUserProfile: (userId: number) => void
-    getStatus: (userId: number) => void
-    updateStatus: (status: string) => void
-    saveProfile: (profile: ProfileType) => Promise<void>
-    savePhoto : (photo: File) => Promise<void>
-}
 type OwnProps = {}
-type PropsType = StatePropsType & DispatchPropsType & OwnProps & RouterType;
 
-const withTypedRouter = <P extends object>(WrappedComponent: React.ComponentType<P & RouterType>) => {
-    return (props: P) => {
-        const params = useParams();
-        return <WrappedComponent {...props} params={params} />;
-    };
-};
+const ProfileContainer: FC<OwnProps> = memo(() => {
 
-class ProfileContainer extends React.Component<PropsType> {
+    const dispatch: AppDispatch = useDispatch();
+    const params = useParams<{ userId?: string }>();
+    const authorisedUserId = useSelector(getAuthUserId);
+    const profile = useSelector(getAuthUserProfile);
+    const status = useSelector(getProfilePageStatus);
+    const isAuth = useSelector(getAuth);
 
-    // обработчик ошибки
-    catchUnhandledRejection = () => {
+    const isOwner = !params.userId;
+
+    //обработчик ошибок
+    const catchUnhandledRejection = useCallback((e: PromiseRejectionEvent) => {
+        console.log('error:',  e.reason);
         alert('error occurred.');
-    }
+    }, [])
 
-    reFreshProfile() {
-        let userId: string | number | null = this.props.params.userId;
-        if (!userId) {
-            userId = this.props.authorisedUserId;
+   const reFreshProfile = useCallback(() => {
+
+        let userId: number | null = null;
+        if (params.userId) {
+            userId = Number(params.userId);
+        } else {
+            userId = authorisedUserId
         }
 
-        if (userId && !isNaN(Number(userId))) {
-            this.props.getUserProfile(Number(userId));
-            this.props.getStatus(Number(userId));
+        if (userId && !isNaN(userId)) {
+            dispatch(getUserProfile(userId));
+            dispatch(getStatus(userId));
         } else {
             console.warn('Invalid userId:', userId);
-            // Можно добавить редирект на логин или показать сообщение
         }
-    }
+    }, [dispatch, params.userId, authorisedUserId])
 
-    componentDidMount() {
-        this.reFreshProfile();
-        // обработчик ошибки
-        window.addEventListener('unhandledrejection', this.catchUnhandledRejection)
-    }
+    useEffect(() => {
+        reFreshProfile()
+        window.addEventListener('unhandledrejection', catchUnhandledRejection)
 
-    componentWillUnmount() {
-        // удаление обработчика ошибки
-        window.removeEventListener('unhandledrejection', this.catchUnhandledRejection);
-    }
-
-    componentDidUpdate(prevProps: PropsType) {
-        if (this.props.params.userId !== prevProps.params.userId) {
-            this.reFreshProfile();
+        return () => {
+            window.removeEventListener('unhandledrejection', catchUnhandledRejection);
         }
-    }
+    }, []);
 
-    render() {
+    useEffect(() => {
+        reFreshProfile();
+    }, [params.userId]);
+
+    const handleUpdateStatus = useCallback((status: string) => {
+        dispatch(updateStatus(status))
+    }, [dispatch, status])
+
+    const setSaveProfile = useCallback(async (profile: ProfileType) => {
+        return await dispatch(saveProfile(profile))
+    }, [dispatch])
+
+    const setSavePhoto = useCallback( async (photo: File) => {
+       return await dispatch(savePhoto(photo))
+    }, [dispatch])
+
+    if (!isAuth) return <Navigate to='/login' replace/>
 
         return (
-            <Profile {...this.props}
-                     profile={this.props.profile}
-                     status={this.props.status}
-                     updateStatus={this.props.updateStatus}
-                     isOwner={!this.props.params.userId}
-                     savePhoto={this.props.savePhoto}
-                     saveProfile={this.props.saveProfile}
+            <Profile
+                     profile={profile}
+                     status={status}
+                     updateStatus={handleUpdateStatus}
+                     isOwner={isOwner}
+                     savePhoto={setSavePhoto}
+                     saveProfile={setSaveProfile}
             />
         )
-    }
-}
-
-let mapStateToProps = (state: AppStateType): StatePropsType => ({
-    profile: getAuthUserProfile(state),
-    isAuth: getAuth(state),
-    status: getProfilePageStatus(state),
-    authorisedUserId: getAuthUserId(state)
 })
 
-export default compose(
-    withTypedRouter,
-    withAuthComponent,
-    connect(mapStateToProps, {getUserProfile, getStatus, updateStatus, savePhoto, saveProfile})
-)
-(ProfileContainer);
+export default ProfileContainer;

@@ -2,8 +2,8 @@ import {GetItemsResponseType, instance, APIResponseType} from "./api";
 
 
 export const usersApi = {
-    async requestUsers(currentPage: number, pageSize: number) {
-        const response = await instance.get<GetItemsResponseType>(`users?page=${currentPage}&count=${pageSize}`)
+    async requestUsers(currentPage: number, pageSize: number, term: string = '') {
+        const response = await instance.get<GetItemsResponseType>(`users?page=${currentPage}&count=${pageSize}&term=${term}`);
         return response.data;
     },
     async getFriends(currentPage = 1, pageSize = 3) {

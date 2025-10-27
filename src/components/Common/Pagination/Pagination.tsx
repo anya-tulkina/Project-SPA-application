@@ -6,7 +6,7 @@ type PropsType = {
     totalItemsCount: number
     pageSize: number
     currentPage: number
-    onPageChanged: (pageNumber: number) => void
+    onPageChanged: (numberPage: number) => void
     portionSize?: number
 }
 
@@ -37,7 +37,7 @@ let Paginator: FC<PropsType> = ({totalItemsCount, pageSize, currentPage, onPageC
             .filter(p => p >= leftBorderPage && p <= rightBorderPage)
             .map(p => {
                 return <span
-                    key={p.id}
+                    key={p}
                     className={cl({[style.selectedPage]: currentPage === p}, style.pageNumber)}/*присваеваем класс выбранной странице*/
                     onClick={() => {
                         onPageChanged(p)

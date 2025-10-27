@@ -91,7 +91,7 @@ export const updateStatus = (status: string): ThunkType =>
         }
     };
 
-export const savePhoto = (file: string): ThunkType =>
+export const savePhoto = (file: File): ThunkType =>
     async (dispatch) => {
         let data = await profileApi.savePhoto(file);
         if (data.resultCode === 0) {

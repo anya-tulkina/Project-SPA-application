@@ -1,40 +1,45 @@
-import React, {FC, useCallback, useEffect} from 'react'
+import React, {FC, memo, useCallback, useEffect} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import Users from './Users'
-import {follow, unfollow, requestUsers} from '../../redux/users-reducer'
+import {follow, unfollow, requestUsers, FilterType} from '../../redux/users-reducer'
 import Preloader from '../Common/Preloader/Preloader'
 import {
     getCurrentPage,
-    getFollowingIsProgress,
+    getFollowingInProgress,
     getIsFetching,
     getPageSize,
-    getTotalUsersCount, getUsers
+    getTotalUsersCount, getUsers, getUsersFilter
 } from '../../redux/users-selectors'
-import {AppDispatch, AppStateType} from "../../redux/redux-store";
+import {AppDispatch} from "../../redux/redux-store";
 
-const UsersAPIComponent: FC = () => {
+const UsersAPIComponent: FC = memo(()=> {
 
     const dispatch: AppDispatch = useDispatch();
-    const users = useSelector((state: AppStateType) => getUsers(state));
-    const currentPage = useSelector((state: AppStateType) => getCurrentPage(state));
-    const pageSize = useSelector((state: AppStateType) => getPageSize(state));
-    const isFetching = useSelector((state: AppStateType) => getIsFetching(state));
-    const totalUsersCount = useSelector((state: AppStateType) => getTotalUsersCount(state));
-    const followingIsProgress = useSelector((state: AppStateType) => getFollowingIsProgress(state));
+    const users = useSelector(getUsers);
+    const currentPage = useSelector(getCurrentPage);
+    const pageSize = useSelector(getPageSize)
+    const isFetching = useSelector(getIsFetching)
+    const totalUsersCount = useSelector(getTotalUsersCount);
+    const followingInProgress = useSelector(getFollowingInProgress);
+    const userFilter = useSelector(getUsersFilter);
 
     useEffect(() => {
-        dispatch(requestUsers(currentPage, pageSize))
-    }, []);
+        dispatch(requestUsers(currentPage, pageSize, userFilter))
+    }, [dispatch, currentPage, pageSize]);
 
     const onPageChanged = useCallback((numberPage: number) => {
-        dispatch(requestUsers(numberPage, pageSize))
+        dispatch(requestUsers(numberPage, pageSize, userFilter))
+    }, [pageSize, dispatch]);
+
+    const onFilterChanged = useCallback((newFilter: FilterType) => {
+        dispatch(requestUsers(1, pageSize, newFilter))
     }, [pageSize, dispatch]);
 
     const handleFollow = useCallback((userId: number) => {
         dispatch(follow(userId))
     }, [dispatch])
 
-    const handleUnFollow = useCallback((userId: number) => {
+    const handleUnfollow = useCallback((userId: number) => {
         dispatch(unfollow(userId))
     }, [dispatch])
 
@@ -44,18 +49,16 @@ const UsersAPIComponent: FC = () => {
                    pageSize={pageSize}
                    currentPage={currentPage}
                    onPageChanged={onPageChanged}
+                   onFilterChanged={onFilterChanged}
                    users={users}
-                   unfollow={handleUnFollow}
+                   unfollow={handleUnfollow}
                    follow={handleFollow}
-                   followingIsProgress={followingIsProgress}
+                   followingInProgress={followingInProgress}
             />
         </>
-}
+})
 
 export default UsersAPIComponent;
-
-
-
 
 
 

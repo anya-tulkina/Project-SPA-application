@@ -15,6 +15,8 @@ type PropsType = {
     saveProfile: (profile: ProfileType) => Promise<void>
 }
 
+export type FormDataType = ProfileType | null
+
 const ProfileInfo: FC<PropsType> = ({profile, status, updateStatus, isOwner, savePhoto, saveProfile}) => {
 
     let [editMode, setEditMode] = useState(false);
@@ -43,7 +45,7 @@ const ProfileInfo: FC<PropsType> = ({profile, status, updateStatus, isOwner, sav
                 {!profile.photos.large ? <img src={photoUrl}/> : <img src={profile.photos.large}/>}
                 {isOwner && <input type={'file'} onChange={onMainPhotoSelected}/>}
             </div>
-            <ProfileStatusWIthHook status={status} updateStatus={updateStatus}/>
+            <ProfileStatusWIthHook isOwner={isOwner} status={status} updateStatus={updateStatus}/>
             {editMode
                 ? <ProfileDataFormRedux initialValues={profile} onSubmit={onSubmit}/>
                 : <ProfileData isOwner={isOwner} goToEditMode={() => {

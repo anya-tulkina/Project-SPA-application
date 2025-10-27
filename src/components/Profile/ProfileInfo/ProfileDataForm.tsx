@@ -5,10 +5,8 @@ import {creatField, Input, Textarea} from "../../Common/FormsControl/FormsContro
 import style from "../../Common/FormsControl/FormsControl.module.css";
 import {FC} from "react";
 import {ProfileType} from "../../../types/types";
+import {FormDataType} from "./ProfileInfo";
 
-type FormDataType = {
-    
-}
 type OwnProps = {
     profile: ProfileType
 }
